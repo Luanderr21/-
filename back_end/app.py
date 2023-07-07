@@ -20,11 +20,12 @@ def video_text_converter(filename):
     :param filename: 文件名
     :return: 识别结果
     """
+    videoPath = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{filename}"))
+    outPath = os.path.normpath(os.path.join(os.path.abspath(__file__), "../wav_out/out.wav"))
+    video = AudioSegment.from_file(videoPath)
+    video.export(outPath, format="wav")
 
-    video = AudioSegment.from_file(os.path.join(os.path.abspath(__file__), f"../uploads/{filename}"))
-    video.export(os.path.join(os.path.abspath(__file__), "../wav_out/out.wav"), format="wav")
-
-    with sr.AudioFile(os.path.join(os.path.abspath(__file__), "../wav_out/out.wav")) as source:
+    with sr.AudioFile(outPath) as source:
         audio = recognizer.record(source)
     try:
         return recognizer.recognize_google(audio, language="zh-CN")
@@ -40,7 +41,8 @@ def file_uploader():
     print(request.files)
     format_time = time.strftime("%Y%m%d%H%M%S")
     # TODO 生成id保存文件及对应的识别结果
-    video.save(os.path.join(os.path.abspath(__file__), f"../uploads/{secure_filename(video.filename)}"))
+    videoPath = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{secure_filename(video.filename)}"))
+    video.save(videoPath)
     return video_text_converter(video.filename)
 
 
@@ -63,7 +65,7 @@ def uploade_test():
                              secret_key="06b53acfaa6ce27530ec1351e74ace49",
                              upload_file_path=os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
     upload_res = converter.upload()
-    return upload_res
+    return upload_res["content"]["orderId"]
 
 
 @app.route("/testpage")
