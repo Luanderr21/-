@@ -63,7 +63,7 @@ class ConverterApi(object):
         response = requests.post(
             url=lfasr_host + lfasr_get_result + "?" + urllib.parse.urlencode(params),
             headers={"Content-type": "application/json"})
-        return json.loads(response.text)
+        return response.text
 
     def get_result(self):
         uploadresp = self.upload()
