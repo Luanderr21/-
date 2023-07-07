@@ -25,8 +25,8 @@ class DataBase(object):
         self.cursor.execute(operation)
         self.conn.commit()
 
-    def addResult(self, vname, vresult):
-        operation = f"update video set result = '{vresult}' where name = '{vname}'"
+    def addResult(self, vkey, vresult):
+        operation = f"update video set result = '{vresult}' where key = '{vkey}'"
         self.cursor.execute(operation)
         self.conn.commit()
 

@@ -12,10 +12,9 @@ from .app_config import lfasr_host, lfasr_upload, lfasr_get_result
 
 
 class ConverterApi(object):
-    def __init__(self, appid, secret_key, upload_file_path):
+    def __init__(self, appid, secret_key):
         self.appid = appid
         self.secret_key = secret_key
-        self.upload_file_path = upload_file_path
         self.ts = str(int(time.time()))
         self.signa = self.get_signa()
 
@@ -32,19 +31,20 @@ class ConverterApi(object):
         signa = str(signa, 'utf-8')
         return signa
 
-    def upload(self):
+    def upload(self, upload_file_path):
         print("上传部分：")
-        upload_file_path = self.upload_file_path
         file_len = os.path.getsize(upload_file_path)
         file_name = os.path.basename(upload_file_path)
 
         param_dict = {}
-        param_dict['appId'] = self.appid
-        param_dict['signa'] = self.signa
-        param_dict['ts'] = self.ts
+        param_dict["appId"] = self.appid
+        param_dict["signa"] = self.signa
+        param_dict["ts"] = self.ts
         param_dict["fileSize"] = file_len
         param_dict["fileName"] = file_name
         param_dict["duration"] = "200"
+        #TODO 部署后开启回调
+        param_dict["callbackUrl"] = "101.37.80.29:5000/lfasr_callback"
         print("upload参数：", param_dict)
         data = open(upload_file_path, 'rb').read(file_len)
 

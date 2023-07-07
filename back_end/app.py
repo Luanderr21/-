@@ -12,7 +12,8 @@ from db.db_api import DataBase
 
 app = Flask(__name__)
 recognizer = sr.Recognizer()
-
+converter = ConverterApi(appid="26bb2303",
+                         secret_key="06b53acfaa6ce27530ec1351e74ace49")
 
 def video_text_converter(filename):
     """
@@ -40,7 +41,6 @@ def file_uploader():
     video = request.files["video"]
     print(request.files)
     format_time = time.strftime("%Y%m%d%H%M%S")
-    # TODO 生成id保存文件及对应的识别结果
     videoPath = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{secure_filename(video.filename)}"))
     video.save(videoPath)
     return video_text_converter(video.filename)
@@ -52,20 +52,41 @@ def file_uploader():
 @app.route("/uploadTest", methods=["POST"])
 def uploade_test():
     """
-    TODO 获取上传信息完毕，编写回调接口获取结果
-    :return:
+    上传视频获取唯一orderId
+    :return: orderId
     """
     video = request.files["video"]
     format = video.filename.split(".")[-1]
     vname = str(uuid.uuid4()) + "." + format
-    video.save(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
+    videoPath = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
+    video.save(videoPath)
     db = DataBase()
     db.newVideo(vname)
-    converter = ConverterApi(appid="26bb2303",
-                             secret_key="06b53acfaa6ce27530ec1351e74ace49",
-                             upload_file_path=os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
-    upload_res = converter.upload()
-    return upload_res["content"]["orderId"]
+    upload_res = converter.upload(videoPath)
+    if upload_res["descInfo"] == "success":
+        orderId = upload_res["content"]["orderId"]
+        db.addKey(vname, orderId)
+        db.close()
+        return orderId
+    else:
+        db.close()
+        return "upload video failed!"
+
+@app.route("/querypage")
+def querypage():
+    return render_template("query_test.html")
+
+@app.route("/query", methods=["POST"])
+def query():
+    """
+    根据唯一orderId查询识别结果
+    :return: 识别结果（Json）
+    """
+    orderId = request.form["orderId"]
+    db = DataBase()
+    res = converter.query_result(orderId)
+    db.addResult(orderId, res)
+    return res
 
 
 @app.route("/testpage")
