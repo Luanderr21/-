@@ -1,35 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { ElLoading } from "element-plus";
-// import { ElMessage } from "element-plus";
 
 const textarea = ref("");
 let fullscreenLoading = ref(false);
 
-let loadingInstance: ElLoading;
-
 const updateLoading = function () {
   fullscreenLoading.value = true;
 };
-
-// const gotoLoading = function () {
-//   loading = ElLoading.service({
-//     lock: true,
-//     text: "Loading",
-//     background: "rgba(0, 0, 0, 0.5)",
-//   });
-// };
-
-// const openFullScreen2 = () => {
-//   const loading = ElLoading.service({
-//     lock: true,
-//     text: "Loading",
-//     background: "rgba(0, 0, 0, 0.7)",
-//   });
-//   setTimeout(() => {
-//     loading.close();
-//   }, 2000);
-// };
 
 const handleSuccess = function (
   uploadFile: UploadFile,
@@ -39,116 +16,68 @@ const handleSuccess = function (
   console.log("promise", uploadFiles);
   textarea.value = uploadFile;
 
-  // loadingInstance.close();
   fullscreenLoading.value = false;
 };
-
-// defineProps<{ msg: string }>();
-// const count = ref(0);
-// const input = ref("element-plus");
-// const curDate = ref("");
-// const toast = () => {
-//   ElMessage.success("Hello");
-// };
 </script>
 
 <template>
-  <!-- <h1 color="$ep-color-primary">{{ msg }}</h1> -->
-  <el-upload
-    class="upload-demo"
-    drag
-    action="api/upload"
-    name="video"
-    multiple
-    :on-success="handleSuccess"
-    :before-upload="updateLoading"
-  >
-    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-    <div class="el-upload__text">
-      Drop file here or <em>click to upload</em>
-    </div>
-    <template #tip>
-      <div class="el-upload__tip">ogg/webm/mp4 files</div>
-    </template>
-  </el-upload>
-  <el-input
-    v-model="textarea"
-    :rows="4"
-    type="textarea"
-    placeholder="wati for result"
-    v-loading.fullscreen.lock="fullscreenLoading"
-    element-loading-text="Loading..."
-    style="margin-top: 2rem"
-  />
-  <!-- <p>
-    See
-    <a href="https://element-plus.org" target="_blank">element-plus</a> for more
-    information.
-  </p> -->
-  <!-- example components -->
-  <!-- <div class="mb-4">
-    <el-button size="large" @click="toast">El Message</el-button>
-  </div>
+  <el-row :gutter="20">
+    <el-col :span="6" :offset="6">
+      <div class="grid-content ep-bg-purple" />
+    </el-col>
+  </el-row>
+  <el-row :gutter="20">
+    <el-col :span="16" :offset="4">
+      <el-upload
+        class="upload-demo"
+        drag
+        action="api/upload"
+        name="video"
+        multiple
+        :on-success="handleSuccess"
+        :before-upload="updateLoading"
+      >
+        <svg
+          t="1688786819959"
+          class="icon"
+          viewBox="0 0 1264 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="2573"
+          id="mx_n_1688786819960"
+          width="200"
+          height="200"
+        >
+          <path
+            d="M992.171444 312.62966C975.189616 137.155482 827.415189 0 647.529412 0 469.849434 0 323.616239 133.860922 303.679205 306.210218 131.598564 333.839271 0 482.688318 0 662.588235c0 199.596576 161.815189 361.411765 361.411765 361.411765h184.014581V692.705882H294.530793l337.939795-361.411764 337.939796 361.411764H726.132229v331.294118H933.647059v-1.555371c185.470975-15.299199 331.294118-170.426291 331.294117-359.856394 0-168.969898-116.101408-310.367302-272.769732-349.958575z"
+            p-id="2574"
+            fill="#919191"
+          ></path>
+        </svg>
+        <div class="el-upload__text">
+          Drop file here or <em>click to upload</em>
+          <div class="el-upload__tip">ogg/webm/mp4 files</div>
+        </div>
+      </el-upload>
+    </el-col>
+  </el-row>
 
-  <div class="my-2 text-center flex flex-wrap justify-center items-center">
-    <el-button @click="count++">count is: {{ count }}</el-button>
-    <el-button type="primary" @click="count++">count is: {{ count }}</el-button>
-    <el-button type="success" @click="count++">count is: {{ count }}</el-button>
-    <el-button type="warning" @click="count++">count is: {{ count }}</el-button>
-    <el-button type="danger" @click="count++">count is: {{ count }}</el-button>
-    <el-button type="info" @click="count++">count is: {{ count }}</el-button> 
-  </div>-->
-
-  <!-- <div>
-    <el-tag type="success" class="m-1">Tag 1</el-tag>
-    <el-tag type="warning" class="m-1">Tag 1</el-tag>
-    <el-tag type="danger" class="m-1">Tag 1</el-tag>
-    <el-tag type="info" class="m-1">Tag 1</el-tag>
-  </div>
-
-  <div class="my-2">
-    <el-input class="m-2" v-model="input" style="width: 200px" />
-    <el-date-picker
-      class="m-2"
-      v-model="curDate"
-      type="date"
-      placeholder="Pick a day"
-    ></el-date-picker>
-  </div>
-
-  <p>For example, we can custom primary color to 'green'.</p>
-
-  <p>
-    Edit
-    <code>components/HelloWorld.vue</code> to test components.
-  </p>
-  <p>
-    Edit
-    <code>styles/element/var.scss</code> to test scss variables.
-  </p>
-
-  <p>
-    Full Example:
-    <a
-      href="https://github.com/element-plus/element-plus-vite-starter"
-      target="_blank"
-      >element-plus-vite-starter</a
-    >
-    | On demand Example:
-    <a
-      href="https://github.com/element-plus/unplugin-element-plus"
-      target="_blank"
-      >unplugin-element-plus/examples/vite</a
-    >
-  </p> -->
+  <el-row :gutter="20" class="input-textarea">
+    <el-col :span="16" :offset="4">
+      <el-input
+        v-model="textarea"
+        :rows="4"
+        type="textarea"
+        placeholder="wati for result"
+        v-loading.fullscreen.lock="fullscreenLoading"
+        element-loading-text="Loading..."
+      />
+    </el-col>
+  </el-row>
 </template>
 
 <style>
-.ep-button {
-  margin: 4px;
-}
-.ep-button + .ep-button {
-  margin-left: 0;
-  margin: 4px;
+.input-textarea {
+  margin-top: 100px;
 }
 </style>
