@@ -1,40 +1,92 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { ElMessage } from "element-plus";
+import { ElLoading } from "element-plus";
+// import { ElMessage } from "element-plus";
 
-defineProps<{ msg: string }>();
+const textarea = ref("");
+let fullscreenLoading = ref(false);
 
-const count = ref(0);
-const input = ref("element-plus");
+let loadingInstance: ElLoading;
 
-const curDate = ref("");
-
-const toast = () => {
-  ElMessage.success("Hello");
+const updateLoading = function () {
+  fullscreenLoading.value = true;
 };
+
+// const gotoLoading = function () {
+//   loading = ElLoading.service({
+//     lock: true,
+//     text: "Loading",
+//     background: "rgba(0, 0, 0, 0.5)",
+//   });
+// };
+
+// const openFullScreen2 = () => {
+//   const loading = ElLoading.service({
+//     lock: true,
+//     text: "Loading",
+//     background: "rgba(0, 0, 0, 0.7)",
+//   });
+//   setTimeout(() => {
+//     loading.close();
+//   }, 2000);
+// };
+
+const handleSuccess = function (
+  uploadFile: UploadFile,
+  uploadFiles: UploadFiles
+) {
+  console.log("text", uploadFile);
+  console.log("promise", uploadFiles);
+  textarea.value = uploadFile;
+
+  // loadingInstance.close();
+  fullscreenLoading.value = false;
+};
+
+// defineProps<{ msg: string }>();
+// const count = ref(0);
+// const input = ref("element-plus");
+// const curDate = ref("");
+// const toast = () => {
+//   ElMessage.success("Hello");
+// };
 </script>
 
 <template>
-  <h1 color="$ep-color-primary">{{ msg }}</h1>
-  <el-upload class="upload-demo" drag action="api/upload" file="video" multiple>
+  <!-- <h1 color="$ep-color-primary">{{ msg }}</h1> -->
+  <el-upload
+    class="upload-demo"
+    drag
+    action="api/upload"
+    name="video"
+    multiple
+    :on-success="handleSuccess"
+    :before-upload="updateLoading"
+  >
     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
     <div class="el-upload__text">
       Drop file here or <em>click to upload</em>
     </div>
     <template #tip>
-      <div class="el-upload__tip">
-        jpg/png files with a size less than 500kb
-      </div>
+      <div class="el-upload__tip">ogg/webm/mp4 files</div>
     </template>
   </el-upload>
-  <p>
+  <el-input
+    v-model="textarea"
+    :rows="4"
+    type="textarea"
+    placeholder="wati for result"
+    v-loading.fullscreen.lock="fullscreenLoading"
+    element-loading-text="Loading..."
+    style="margin-top: 2rem"
+  />
+  <!-- <p>
     See
     <a href="https://element-plus.org" target="_blank">element-plus</a> for more
     information.
-  </p>
-
+  </p> -->
   <!-- example components -->
-  <div class="mb-4">
+  <!-- <div class="mb-4">
     <el-button size="large" @click="toast">El Message</el-button>
   </div>
 
@@ -44,10 +96,10 @@ const toast = () => {
     <el-button type="success" @click="count++">count is: {{ count }}</el-button>
     <el-button type="warning" @click="count++">count is: {{ count }}</el-button>
     <el-button type="danger" @click="count++">count is: {{ count }}</el-button>
-    <el-button type="info" @click="count++">count is: {{ count }}</el-button>
-  </div>
+    <el-button type="info" @click="count++">count is: {{ count }}</el-button> 
+  </div>-->
 
-  <div>
+  <!-- <div>
     <el-tag type="success" class="m-1">Tag 1</el-tag>
     <el-tag type="warning" class="m-1">Tag 1</el-tag>
     <el-tag type="danger" class="m-1">Tag 1</el-tag>
@@ -88,7 +140,7 @@ const toast = () => {
       target="_blank"
       >unplugin-element-plus/examples/vite</a
     >
-  </p>
+  </p> -->
 </template>
 
 <style>
