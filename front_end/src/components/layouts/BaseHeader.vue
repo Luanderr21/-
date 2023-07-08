@@ -5,7 +5,7 @@ import Icon from "../icon.vue";
 
 <template>
   <el-menu class="el-menu-demo" mode="horizontal">
-    <el-menu-item index="1"><Icon /></el-menu-item>
+    <el-menu-item index="0" class="icon-col"><Icon /></el-menu-item>
     <!-- <el-sub-menu index="2">
       <template #title>Workspace</template>
       <el-menu-item index="2-1">item one</el-menu-item>
@@ -30,3 +30,9 @@ import Icon from "../icon.vue";
     </el-menu-item> -->
   </el-menu>
 </template>
+
+<style scoped>
+.icon-col {
+  width: 100px;
+}
+</style>
