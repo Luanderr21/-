@@ -4,7 +4,9 @@ import { ref } from "vue";
 const textarea = ref("");
 let fullscreenLoading = ref(false);
 
-const updateLoading = function () {
+const updateLoading = function (rawFile: UploadRawFile) {
+  console.log("rawFile: ", rawFile);
+
   fullscreenLoading.value = true;
 };
 
@@ -15,17 +17,11 @@ const handleSuccess = function (
   console.log("text", uploadFile);
   console.log("promise", uploadFiles);
   textarea.value = uploadFile;
-
   fullscreenLoading.value = false;
 };
 </script>
 
 <template>
-  <el-row :gutter="20">
-    <el-col :span="6" :offset="6">
-      <div class="grid-content ep-bg-purple" />
-    </el-col>
-  </el-row>
   <el-row :gutter="20">
     <el-col :span="16" :offset="4">
       <el-upload
@@ -34,8 +30,8 @@ const handleSuccess = function (
         action="api/upload"
         name="video"
         multiple
-        :on-success="handleSuccess"
         :before-upload="updateLoading"
+        :on-success="handleSuccess"
       >
         <svg
           t="1688786819959"
@@ -59,19 +55,6 @@ const handleSuccess = function (
           <div class="el-upload__tip">ogg/webm/mp4 files</div>
         </div>
       </el-upload>
-    </el-col>
-  </el-row>
-
-  <el-row :gutter="20" class="input-textarea">
-    <el-col :span="16" :offset="4">
-      <el-input
-        v-model="textarea"
-        :rows="4"
-        type="textarea"
-        placeholder="wati for result"
-        v-loading.fullscreen.lock="fullscreenLoading"
-        element-loading-text="Loading..."
-      />
     </el-col>
   </el-row>
 </template>

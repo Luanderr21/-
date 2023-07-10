@@ -7,7 +7,6 @@
     width="100%"
     height="100%"
     viewBox="0 0 155 155"
-    preserveAspectRatio="meet"
     color-interpolation-filters="sRGB"
   >
     <g data-v-6805eed4="" class="iconmbgsvg">
