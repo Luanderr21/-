@@ -17,29 +17,31 @@ class DataBase(object):
 
     def newVideo(self, vname):
         operation = "insert into video values(?, null, null)"
-        params = [vname]
-        self.cursor.execute(operation, params)
+        self.cursor.execute(operation, (vname, ))
         self.conn.commit()
 
     def addKey(self, vname, vkey):
         operation = "update video set key = ? where name = ?"
-        params = [vname, vkey]
-        self.cursor.execute(operation, params)
+        self.cursor.execute(operation, (vkey, vname))
         self.conn.commit()
 
     def addResult(self, vkey, vresult):
-        operation = f"update video set result = ? where key = ?"
-        params = [vresult, vkey]
-        self.cursor.execute(operation, params)
+        operation = "update video set result = ? where key = ?"
+        self.cursor.execute(operation, (vresult, vkey))
         self.conn.commit()
 
     def getInfo(self, vname):
-        operation = f"select * from video where name = ?"
-        params = [vname]
-        self.cursor.execute(operation, params)
+        operation = "select * from video where name = ?"
+        self.cursor.execute(operation, (vname, ))
         self.conn.commit()
-        return self.cursor.fetchone()
+        return self.cursor.fetchone()[0]
 
+    def getResult(self, vkey):
+        operation = "select result from video where key = ?"
+        self.cursor.execute(operation, (vkey, ))
+        self.conn.commit()
+        vres = self.cursor.fetchone()
+        return vres[0]
 
     def close(self):
         self.conn.close()

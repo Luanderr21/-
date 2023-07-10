@@ -44,7 +44,7 @@ class ConverterApi(object):
         param_dict["fileName"] = file_name
         param_dict["duration"] = "200"
         #TODO 部署后开启回调
-        param_dict["callbackUrl"] = "101.37.80.29:5000/lfasr_callback"
+        param_dict["callbackUrl"] = "http://101.37.80.29:5000/callback"
         print("upload参数：", param_dict)
         data = open(upload_file_path, 'rb').read(file_len)
 
