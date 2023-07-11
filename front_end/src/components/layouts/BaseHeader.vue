@@ -1,34 +1,28 @@
 <script lang="ts" setup>
 import { toggleDark } from "~/composables";
 import Icon from "../icon.vue";
+import useVideoList from "~/stores/videoList";
+import { storeToRefs } from "pinia";
+import { reactive } from "vue";
+const videoListStore = useVideoList();
+
+const { videos } = reactive(videoListStore);
+console.log("videos: ", videos);
 </script>
 
 <template>
-  <el-menu class="el-menu-demo" mode="horizontal">
-    <el-menu-item index="0" class="icon-col"><Icon /></el-menu-item>
-    <!-- <el-sub-menu index="2">
-      <template #title>Workspace</template>
-      <el-menu-item index="2-1">item one</el-menu-item>
-      <el-menu-item index="2-2">item two</el-menu-item>
-      <el-menu-item index="2-3">item three</el-menu-item>
-      <el-sub-menu index="2-4">
-        <template #title>item four</template>
-        <el-menu-item index="2-4-1">item one</el-menu-item>
-        <el-menu-item index="2-4-2">item two</el-menu-item>
-        <el-menu-item index="2-4-3">item three</el-menu-item>
+  <el-header>
+    <el-menu mode="horizontal" :ellipsis="false">
+      <el-menu-item index="0" class="icon-col"><Icon /></el-menu-item>
+      <div class="flex-grow" />
+      <el-sub-menu index="2">
+        <template #title>已上传视频</template>
+        <template v-for="(item, index) in videos">
+          <el-menu-item :index="item.index">{{ item.name }}</el-menu-item>
+        </template>
       </el-sub-menu>
-    </el-sub-menu>
-    <el-menu-item index="3" disabled>Info</el-menu-item>
-    <el-menu-item index="4">Orders</el-menu-item>
-    <el-menu-item h="full" @click="toggleDark()">
-      <button
-        class="border-none w-full bg-transparent cursor-pointer"
-        style="height: var(--ep-menu-item-height)"
-      >
-        <i inline-flex i="dark:ep-moon ep-sunny" />
-      </button>
-    </el-menu-item> -->
-  </el-menu>
+    </el-menu>
+  </el-header>
 </template>
 
 <style scoped>
