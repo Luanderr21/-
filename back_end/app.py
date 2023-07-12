@@ -200,6 +200,7 @@ def replace():
     video_tmp = video_tmp.set_audio(final_audio_mv)
     video_tmp.write_videofile(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{final_name}")))
     db.addRepname(orderId, final_name)
+    db.close()
     return final_name
 
 
@@ -215,7 +216,10 @@ def replace_result():
         return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
     if request.args["vkey"] != None:
         vkey = request.args["vkey"]
-        return flask.send_file()
+        db = DataBase()
+        vname = db.getVideo(vkey)
+        db.close()
+        return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
 
 
 @app.route("/callback", methods=["GET"])
