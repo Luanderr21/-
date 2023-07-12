@@ -95,19 +95,22 @@ def query():
     if res is None:
         res = converter.query_result(orderId)
     res_json = json.loads(res)
-    if res_json["content"]["orderInfo"]["status"] == 4:
-        db.addResult(orderId, res)
-        db.close()
-        return get_words(res_json)
-    elif res_json["content"]["orderInfo"]["status"] == 3:
-        db.close()
-        return "converting..."
-    elif res_json["content"]["orderInfo"]["status"] == 0:
-        db.close()
-        return "uploading..."
+    if res_json["descInfo"] == "success":
+        if res_json["content"]["orderInfo"]["status"] == 4:
+            db.addResult(orderId, res)
+            db.close()
+            return get_words(res_json)
+        elif res_json["content"]["orderInfo"]["status"] == 3:
+            db.close()
+            return "converting..."
+        elif res_json["content"]["orderInfo"]["status"] == 0:
+            db.close()
+            return "uploading..."
+        else:
+            db.close()
+            return "failed!"
     else:
-        db.close()
-        return "failed!"
+        return res_json["descInfo"]
     """
     ###
     # 配合回调接口，直接在数据库中查询
@@ -207,8 +210,12 @@ def replace_result():
     vname：文件名
     :return: 二进制流视频
     """
-    vname = request.args["vname"]
-    return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
+    if request.args["vname"] != None:
+        vname = request.args["vname"]
+        return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
+    if request.args["vkey"] != None:
+        vkey = request.args["vkey"]
+        return flask.send_file()
 
 
 @app.route("/callback", methods=["GET"])
