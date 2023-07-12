@@ -1,10 +1,13 @@
 import json
-import os
+import os.path
 import time
 import uuid
 
+import flask
+import pydub
 import speech_recognition as sr
 from flask import Flask, request
+from moviepy.editor import *
 from pydub import AudioSegment
 from werkzeug.utils import secure_filename
 
@@ -54,7 +57,7 @@ def file_uploader():
 
 
 @app.route("/upload", methods=["POST"])
-def uploade_test():
+def xf_uploader():
     """
     上传视频到讯飞接口获取唯一orderId
     :return: orderId
@@ -65,11 +68,10 @@ def uploade_test():
     videoPath = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
     video.save(videoPath)
     db = DataBase()
-    db.newVideo(vname)
     upload_res = converter.upload(videoPath)
     if upload_res["descInfo"] == "success":
         orderId = upload_res["content"]["orderId"]
-        db.addKey(vname, orderId)
+        db.newVideo(orderId, vname)
         db.close()
         return orderId
     else:
@@ -108,7 +110,7 @@ def query():
         return "failed!"
     """
     ###
-    #配合回调接口，直接在数据库中查询
+    # 配合回调接口，直接在数据库中查询
     ###
     db = DataBase()
     orderId = request.form["orderId"]
@@ -151,6 +153,62 @@ def get_words(ori_json):
             newLine["line"] += sentence
         res.append(newLine)
     return res
+
+
+@app.route("/replace", methods=["POST"])
+def replace():
+    """
+    部分音频替换功能
+    body表单参数
+        audio：替换音频
+        orderId：视频主键
+        bg：替换起始时间
+        ed：替换结束时间
+    :return: 替换结果文件名，通过video_show接口获取视频
+    """
+    audio = request.files["audio"]
+    orderId = request.form["orderId"]
+    bg = int(request.form["bg"])
+    ed = int(request.form["ed"])
+    db = DataBase()
+    vname = db.getVideo(orderId)
+    format = audio.filename.split(".")[-1]
+    # 生成uuid保存上传的替换音频
+    replacer_id = str(uuid.uuid4()) + "." + format
+    audio_path = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{replacer_id}"))
+    video_path = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
+    export_path = os.path.normpath(os.path.join(os.path.abspath(__file__), "../tmp/tmp_audio.wav"))
+    audio.save(audio_path)
+    db.addReplacer(orderId, replacer_id)
+    origin = pydub.AudioSegment.from_file(video_path)
+    replacer = pydub.AudioSegment.from_file(audio_path)
+    # pydub切片生成替换后音频
+    first_slice = origin[0:bg]
+    last_slice = origin[ed:len(origin)]
+    silence_slice = pydub.AudioSegment.silent(duration=(ed - bg - len(replacer)))
+    replacer = replacer + silence_slice
+    final_audio = first_slice + replacer + last_slice
+    # pydub导出后moviepy读入
+    final_audio.export(export_path, format="wav")
+    final_audio_mv = AudioFileClip(export_path)
+    final_name = str(uuid.uuid4()) + "." + "mp4"
+    # moviepy合成到原视频并导出
+    video_tmp = VideoFileClip(video_path)
+    video_tmp = video_tmp.set_audio(final_audio_mv)
+    video_tmp.write_videofile(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{final_name}")))
+    db.addRepname(orderId, final_name)
+    return final_name
+
+
+@app.route("/video_show", methods=["GET"])
+def replace_result():
+    """
+    获取视频接口
+    vname：文件名
+    :return: 二进制流视频
+    """
+    vname = request.args["vname"]
+    return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
 
 
 @app.route("/callback", methods=["GET"])

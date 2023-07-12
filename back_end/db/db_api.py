@@ -9,20 +9,17 @@ class DataBase(object):
 
     def createTable(self):
         self.cursor.execute("create table if not exists video("
-                            "name int primary key not null, "
+                            "key text primary key not null, "
+                            "name text, "
                             "result text, "
-                            "key text"
+                            "rep_name text, "
+                            "replacer text"
                             ")")
         self.conn.commit()
 
-    def newVideo(self, vname):
-        operation = "insert into video values(?, null, null)"
-        self.cursor.execute(operation, (vname, ))
-        self.conn.commit()
-
-    def addKey(self, vname, vkey):
-        operation = "update video set key = ? where name = ?"
-        self.cursor.execute(operation, (vkey, vname))
+    def newVideo(self, vkey, vname):
+        operation = "insert into video values(?, ?, null, null, null)"
+        self.cursor.execute(operation, (vkey, vname,))
         self.conn.commit()
 
     def addResult(self, vkey, vresult):
@@ -30,20 +27,33 @@ class DataBase(object):
         self.cursor.execute(operation, (vresult, vkey))
         self.conn.commit()
 
-    def getInfo(self, vname):
-        operation = "select * from video where name = ?"
-        self.cursor.execute(operation, (vname, ))
+    def addReplacer(self, vkey, replacer_id):
+        operation = "update video set replacer = ? where key = ?"
+        self.cursor.execute(operation, (replacer_id, vkey, ))
+        self.conn.commit()
+
+    def addRepname(self, vkey, replaced_name):
+        operation = "update video set rep_name = ? where key = ?"
+        self.cursor.execute(operation, (replaced_name, vkey, ))
+        self.conn.commit()
+
+    def getVideo(self, vkey):
+        operation = "select name from video where key = ?"
+        self.cursor.execute(operation, (vkey,))
         self.conn.commit()
         return self.cursor.fetchone()[0]
 
     def getResult(self, vkey):
         operation = "select result from video where key = ?"
-        self.cursor.execute(operation, (vkey, ))
+        self.cursor.execute(operation, (vkey,))
         self.conn.commit()
         vres = self.cursor.fetchone()
         return vres[0]
 
+
+    def getReps(self, vkey):
+        operation = "select "
+
+
     def close(self):
         self.conn.close()
-
-
