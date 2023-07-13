@@ -9,24 +9,27 @@ declare module 'vue' {
   export interface GlobalComponents {
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
     BaseSide: typeof import('./components/layouts/BaseSide.vue')['default']
+    CustomControls: typeof import('./components/views/video/cpns/CustomControls/index.vue')['default']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElHeader: typeof import('element-plus/es')['ElHeader']
-    ElIcon: typeof import('element-plus/es')['ElIcon']
-    ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElUpload: typeof import('element-plus/es')['ElUpload']
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    Home: typeof import('./components/views/home/home.vue')['default']
     Icon: typeof import('./components/icon.vue')['default']
     Logos: typeof import('./components/Logos.vue')['default']
+    MyVideo: typeof import('./components/views/video/cpns/myVideo/MyVideo.vue')['default']
+    PlayRate: typeof import('./components/views/video/cpns/CustomControls/PlayRate.vue')['default']
+    ProgressBar: typeof import('./components/views/video/cpns/CustomControls/ProgressBar.vue')['default']
+    RightContent: typeof import('./components/views/video/cpns/rightContent/RightContent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-  }
-  export interface ComponentCustomProperties {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+    SplitPane: typeof import('./components/layouts/SplitPane.vue')['default']
+    Video: typeof import('./components/views/video/video.vue')['default']
+    Volume: typeof import('./components/views/video/cpns/CustomControls/Volume.vue')['default']
   }
 }
