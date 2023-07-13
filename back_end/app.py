@@ -69,6 +69,8 @@ def xf_uploader():
     video.save(videoPath)
     db = DataBase()
     upload_res = converter.upload(videoPath)
+    if "descInfo" not in upload_res:
+        return upload_res
     if upload_res["descInfo"] == "success":
         orderId = upload_res["content"]["orderId"]
         db.newVideo(orderId, vname)
@@ -211,10 +213,10 @@ def replace_result():
     vname：文件名
     :return: 二进制流视频
     """
-    if request.args["vname"] != None:
+    if "vname" in request.args:
         vname = request.args["vname"]
         return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
-    if request.args["vkey"] != None:
+    if "vkey" in request.args:
         vkey = request.args["vkey"]
         db = DataBase()
         vname = db.getVideo(vkey)

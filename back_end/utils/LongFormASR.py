@@ -43,7 +43,6 @@ class ConverterApi(object):
         param_dict["fileSize"] = file_len
         param_dict["fileName"] = file_name
         param_dict["duration"] = "200"
-        #TODO 部署后开启回调
         param_dict["callbackUrl"] = "http://101.37.80.29:5000/callback"
         print("upload参数：", param_dict)
         data = open(upload_file_path, 'rb').read(file_len)
@@ -64,36 +63,3 @@ class ConverterApi(object):
             url=lfasr_host + lfasr_get_result + "?" + urllib.parse.urlencode(params),
             headers={"Content-type": "application/json"})
         return response.text
-
-    def get_result(self):
-        uploadresp = self.upload()
-        orderId = uploadresp['content']['orderId']
-        param_dict = {}
-        param_dict['appId'] = self.appid
-        param_dict['signa'] = self.signa
-        param_dict['ts'] = self.ts
-        param_dict['orderId'] = orderId
-        param_dict['resultType'] = "transfer,predict"
-        print("")
-        print("查询部分：")
-        print("get result参数：", param_dict)
-        status = 3
-        # 建议使用回调的方式查询结果，查询接口有请求频率限制
-        while status == 3:
-            response = requests.post(
-                url=lfasr_host + lfasr_get_result + "?" + urllib.parse.urlencode(param_dict),
-                headers={"Content-type": "application/json"})
-            # print("get_result_url:",response.request.url)
-            result = json.loads(response.text)
-            print(result)
-            status = result['content']['orderInfo']['status']
-            print("status=", status)
-            if status == 4:
-                break
-            time.sleep(10)
-        print("get_result resp:", result)
-        return result
-
-    def converter(self):
-        #TODO
-        pass
