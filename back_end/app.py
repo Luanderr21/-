@@ -87,9 +87,8 @@ def query():
     根据唯一orderId查询识别结果
     :return: 识别结果（Json）
     """
-    """
     ###
-    #轮询获取结果方式
+    # 轮询获取结果方式
     ###
     db = DataBase()
     orderId = request.form["orderId"]
@@ -126,6 +125,7 @@ def query():
         return "converting"
     else:
         return get_words(json.loads(res))
+    """
 
 
 def get_words(ori_json):
@@ -213,15 +213,25 @@ def replace_result():
     vname：文件名
     :return: 二进制流视频
     """
+    vname = None
     if "vname" in request.args:
         vname = request.args["vname"]
-        return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
     if "vkey" in request.args:
         vkey = request.args["vkey"]
         db = DataBase()
         vname = db.getVideo(vkey)
         db.close()
-        return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
+    assert vname != None
+    # return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
+    path = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
+    headers = {
+        "Accept-Range": "bytes",
+        "Content-Length": os.path.getsize(path),
+        "Content-Range": request.range.to_content_range_header(os.path.getsize(path))
+    }
+    f = open(path, "rb")
+    f.seek(request.range.ranges[0][0])
+    return flask.Response(f, 206, headers, content_type="video/mp4")
 
 
 @app.route("/callback", methods=["GET"])
