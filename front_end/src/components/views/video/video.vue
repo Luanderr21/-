@@ -10,7 +10,7 @@
   </SplitPane>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="video">
 import { onMounted, watch, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { queryText } from "~/service/api/query";
