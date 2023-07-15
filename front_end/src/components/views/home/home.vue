@@ -26,15 +26,16 @@ const handleSuccess = async function (
   // console.log("UploadFile: ", uploadFile);
   const { name, size } = uploadFile;
   const videoSize = typeof size === "number" ? size : undefined;
-  videoListStore.addVideo(name, response, videoSize);
+  console.log(response);
+  videoListStore.addVideo(name, response, size);
   // videoListStore.addVideo(name, response, size);
   // textarea.value = uploadFile;
   fullscreenLoading.value = false;
-  // 防止访问太快
-  setTimeout(async () => {
-    const { data } = await queryText(response);
-    videoListStore.updateLyric(response, data);
-  }, 300);
+  // // 防止访问太快
+  // setTimeout(async () => {
+  //   const { data } = await queryText(response);
+  //   videoListStore.updateLyric(response, data);
+  // }, 300);
 };
 
 const handleError = function () {
@@ -90,6 +91,6 @@ const handleError = function () {
 <style scoped lang="scss">
 .home {
   margin-top: 10rem;
-  padding: 0 20rem 0 20rem;
+  padding: 0 15rem 0 15rem;
 }
 </style>

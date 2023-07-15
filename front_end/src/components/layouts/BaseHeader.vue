@@ -5,6 +5,7 @@ import useVideoList from "~/stores/videoList/videoList";
 import { storeToRefs } from "pinia";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
+// import type { VideoItem } from "~/stores/videoList"
 
 const videoListStore = useVideoList();
 const router = useRouter();

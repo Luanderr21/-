@@ -3,7 +3,7 @@
     <BaseHeader />
     <div class="main">
       <router-view v-slot="{ Component }">
-        <keep-alive>
+        <keep-alive exclude="video">
           <component :is="Component" />
         </keep-alive>
       </router-view>
@@ -11,12 +11,18 @@
   </el-config-provider>
 </template>
 
-<style scoped>
+<style>
+body {
+  height: 100vh;
+  width: 100wh;
+}
 #app {
   color: var(--ep-text-color-primary);
+  height: 100%;
 }
 .main {
-  height: 650px;
+  /* flex: 1; */
+  height: calc(100vh - 60px);
 }
 </style>
 

@@ -10,6 +10,5 @@ function queryText(orderId: string) {
     },
   });
 }
-// DKHJQ202307121643284626EEq7id5eNmjLYin
-// DKHJQ202307121643284626EEq7id5eNmjLYin
+
 export { queryText };

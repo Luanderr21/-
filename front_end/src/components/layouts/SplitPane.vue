@@ -1,5 +1,24 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import useVideoList from "~/stores/videoList/videoList";
+import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
+import { watch } from "vue";
+
+const isLoading = ref(false);
+const orderId = useRoute().fullPath.slice(7); //根据路由获取orderId
+const videoListStore = useVideoList();
+const { videos } = storeToRefs(videoListStore);
+const videoIndex = videoListStore.findVideoIndex(orderId);
+
+watch(videos.value[videoIndex].lyric, (newValue, oldValue) => {
+  console.log(newValue, oldValue);
+  if (newValue.length === 0) {
+    isLoading.value = true;
+  } else {
+    isLoading.value = false;
+  }
+});
 
 onMounted(() => {
   dragControllerDiv();
@@ -71,11 +90,11 @@ function dragControllerDiv() {
 
 <template>
   <div class="box">
-    <div class="left">
+    <div class="left" id="left">
       <slot name="left-content"></slot>
     </div>
     <div class="resize" title="收缩侧边栏">⋮</div>
-    <div class="right">
+    <div class="right" v-loading="isLoading">
       <slot name="right-content"></slot>
     </div>
   </div>
@@ -85,15 +104,25 @@ function dragControllerDiv() {
 .box {
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
+  padding: 10px 20px 10px 20px;
   display: flex;
   position: relative;
   .left {
     width: 60%;
-    background: #40e0cf;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px 20px 10px 20px;
+    background-color: rgb(206, 214, 224);
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: hidden;
   }
   .right {
     width: 40%;
-    background: #7fbcff;
+    height: 100%;
+    background-color: rgb(206, 214, 224);
+    overflow-y: scroll;
   }
   /*拖拽区div样式*/
   .resize {

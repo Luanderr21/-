@@ -1,10 +1,14 @@
-import service from "../request/index"
+import service from "../request/index";
 
-function uploadFile(){
+function uploadFile() {
   return service({
     method: "post",
-    url: "api/upload"
-  })
+    url: "api/upload",
+  });
 }
 
-export { uploadFile }
+function replaceFile(data: FormData) {
+  return service.postForm("replace", data, {});
+}
+
+export { uploadFile, replaceFile };
