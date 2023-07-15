@@ -13,7 +13,7 @@
     "axios": "^1.4.0",
     "element-plus": "^2.3.6",
     "pinia": "^2.1.4",
-    "video.js": "^8.3.0",
+    "recorder-core": "^1.2.23070100",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },
