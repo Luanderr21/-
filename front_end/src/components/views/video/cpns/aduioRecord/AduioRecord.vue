@@ -32,6 +32,7 @@ export default {
       orderId: "",
       bg: 0,
       ed: 0,
+      isRecording: false,
     };
   },
   methods: {
@@ -87,6 +88,7 @@ export default {
         return;
       }
       this.rec.start();
+      this.isRecording = true;
       console.log("已开始录音");
     },
 
@@ -108,9 +110,11 @@ export default {
 
           this.rec.close(); //关闭录音，释放录音资源，当然可以不释放，后面可以连续调用start
           this.rec = null;
+          this.isRecording = false;
         },
         (err) => {
           console.error("结束录音出错：" + err);
+          this.isRecording = false;
           this.rec.close(); //关闭录音，释放录音资源，当然可以不释放，后面可以连续调用start
           this.rec = null;
         }
@@ -152,7 +156,8 @@ export default {
     },
 
     recPlay() {
-      const fatherNode = document.getElementById("left");
+      const fatherNode = document.querySelector("#audio-container");
+      const nextNode = document.querySelector(".wave-container");
       // 清除 原先存在的节点
       if (document.getElementById("record-audio")) {
         fatherNode?.removeChild(
@@ -164,7 +169,7 @@ export default {
       var audio = document.createElement("audio");
       audio.controls = true;
       audio.id = "record-audio";
-      fatherNode?.appendChild(audio);
+      fatherNode?.insertBefore(audio, nextNode);
       audio.src = localUrl;
       audio.play(); //这样就能播放了
 
@@ -205,38 +210,16 @@ export default {
         );
         if (window.confirm("你是否确定上传更改的音频")) {
           console.log("确定");
+          videos.value[videoIndex].status = "waiting";
           const data = await this.upload(this.recBlob);
-          videos.value[videoIndex].lyric = [];
+          // videos.value[videoIndex].lyric = [];
           videos.value[videoIndex].fileName = data;
           ElMessage({
             message: "成功上传",
             type: "success",
           });
+          videos.value[videoIndex].status = "received";
         }
-        // this.dialogVisible = true;
-        // console.dir(ElMessageBox);
-        // ElMessageBox.confirm(
-        //   "这将会上传您录的语音并对视频进行修改",
-        //   "Warning",
-        //   {
-        //     confirmButtonText: "好",
-        //     cancelButtonText: "取消",
-        //     type: "warning",
-        //   }
-        // )
-        //   .then(async () => {
-        //     console.log("then");
-        //     ElMessage({
-        //       type: "success",
-        //       message: "成功上传",
-        //     });
-        //   })
-        //   .catch(() => {
-        //     ElMessage({
-        //       type: "info",
-        //       message: "您取消了上传",
-        //     });
-        //   });
         console.log("first");
       } else {
         ElMessage({
@@ -256,28 +239,125 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div>
+  <div class="container" id="audio-container">
+    <div class="button-container">
       <!-- 按钮 -->
-      <button @click="recOpen">打开录音,请求权限</button>
-      | <button @click="recStart">开始录音</button>
-      <button @click="recStop">结束录音</button>
-      | <button @click="recPlay">本地试听</button> |
-      <el-button type="primary" @click.stop="handleUploadClick"
-        >上传修改的内容</el-button
+      <el-button @click="recOpen">请求权限</el-button
+      ><el-button @click="recPlay">本地试听</el-button
+      ><el-button type="primary" @click.stop="handleUploadClick"
+        >上传修改</el-button
       >
     </div>
-    <div style="padding-top: 5px">
+    <div class="wave-container">
       <!-- 波形绘制区域 -->
       <div
         style="
           border: 1px solid #ccc;
           display: inline-block;
           vertical-align: bottom;
+          width: 100%;
         "
       >
-        <div style="height: 100px; width: 300px" ref="recwave"></div>
+        <div style="height: 150px; width: 100%" ref="recwave"></div>
+      </div>
+      <div class="record-button-container">
+        <el-button @click="recStart" circle v-if="!isRecording"
+          ><svg
+            t="1689738622995"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="3282"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M808.533333 610.133333c-10.666667-4.266667-23.466667 2.133333-27.733333 12.8-38.4 119.466667-147.2 198.4-273.066667 198.4-157.866667 0-285.866667-128-285.866666-285.866666 0-12.8-8.533333-21.333333-21.333334-21.333334s-21.333333 8.533333-21.333333 21.333334c0 174.933333 136.533333 315.733333 307.2 328.533333v78.933333H405.333333c-12.8 0-21.333333 8.533333-21.333333 21.333334s8.533333 21.333333 21.333333 21.333333h204.8c12.8 0 21.333333-8.533333 21.333334-21.333333s-8.533333-21.333333-21.333334-21.333334h-81.066666v-78.933333c134.4-8.533333 249.6-98.133333 292.266666-228.266667 4.266667-10.666667-2.133333-21.333333-12.8-25.6z"
+              fill="#666767"
+              p-id="3283"
+            ></path>
+            <path
+              d="M507.733333 736c102.4 0 183.466667-83.2 183.466667-183.466667V226.133333c0-102.4-83.2-183.466667-183.466667-183.466666s-183.466667 83.2-183.466666 183.466666v324.266667c0 102.4 83.2 185.6 183.466666 185.6z m-140.8-509.866667c0-78.933333 64-140.8 140.8-140.8 78.933333 0 140.8 64 140.8 140.8v324.266667c0 78.933333-64 140.8-140.8 140.8s-140.8-64-140.8-140.8V226.133333z"
+              fill="#666767"
+              p-id="3284"
+            ></path>
+            <path
+              d="M819.2 544m-29.866667 0a29.866667 29.866667 0 1 0 59.733334 0 29.866667 29.866667 0 1 0-59.733334 0Z"
+              fill="#666767"
+              p-id="3285"
+            ></path></svg
+        ></el-button>
+        <el-button @click="recStop" circle v-else>
+          <svg
+            t="1689738398678"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="2305"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M785.655172 494.344828a17.655172 17.655172 0 0 0-17.655172 17.655172v105.931034c0 136.297931-110.874483 247.172414-247.172414 247.172414s-247.172414-110.874483-247.172414-247.172414v-105.931034a17.655172 17.655172 0 1 0-35.310344 0v105.931034c0 149.804138 117.300966 272.401655 264.827586 281.582345V988.689655h-88.275862a17.655172 17.655172 0 1 0 0 35.310345h211.862069a17.655172 17.655172 0 1 0 0-35.310345h-88.275862v-89.176276c147.526621-9.18069 264.827586-131.795862 264.827586-281.582345v-105.931034a17.655172 17.655172 0 0 0-17.655173-17.655172z"
+              fill=""
+              p-id="2306"
+            ></path>
+            <path
+              d="M520.827586 812.137931c107.078621 0 194.206897-87.128276 194.206897-194.206897V194.206897c0-107.078621-87.128276-194.206897-194.206897-194.206897s-194.206897 87.128276-194.206896 194.206897v423.724137c0 107.078621 87.128276 194.206897 194.206896 194.206897z m-158.896552-617.931034c0-87.622621 71.291586-158.896552 158.896552-158.896552s158.896552 71.273931 158.896552 158.896552v423.724137c0 87.622621-71.291586 158.896552-158.896552 158.896552s-158.896552-71.273931-158.896552-158.896552V194.206897zM921.723586 75.793655a17.637517 17.637517 0 0 0-24.964414 0l-158.896551 158.896552a17.637517 17.637517 0 1 0 24.964413 24.964414l158.896552-158.896552a17.637517 17.637517 0 0 0 0-24.964414z"
+              fill=""
+              p-id="2307"
+            ></path>
+            <path
+              d="M656.896 365.585655a17.637517 17.637517 0 1 0-24.964414-24.964414l-247.172414 247.172414a17.637517 17.637517 0 1 0 24.964414 24.964414l247.172414-247.172414zM225.862621 746.690207l-123.586207 123.586207a17.637517 17.637517 0 1 0 24.964414 24.964414l123.586206-123.586207a17.637517 17.637517 0 1 0-24.964413-24.964414z"
+              fill=""
+              p-id="2308"
+            ></path>
+          </svg>
+        </el-button>
       </div>
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.container {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: warp;
+  gap: 10px;
+  background-color: var(--el-color-warning-light-7);
+  box-sizing: border-box;
+  padding: 10px;
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    button {
+      width: 50px;
+    }
+    .ep-button + .ep-button {
+      margin-left: 0;
+    }
+  }
+  .wave-container {
+    width: 40%;
+    height: 150px;
+    position: relative;
+    .record-button-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      button {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+</style>

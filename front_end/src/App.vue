@@ -2,9 +2,11 @@
   <el-config-provider namespace="ep">
     <BaseHeader />
     <div class="main">
-      <router-view v-slot="{ Component }">
-        <keep-alive exclude="video">
-          <component :is="Component" />
+      <router-view v-slot="{ Component }" :key="route.path">
+        <keep-alive>
+          <transition>
+            <component :is="Component" />
+          </transition>
         </keep-alive>
       </router-view>
     </div>
@@ -30,6 +32,7 @@ body {
 import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
 
+const route = useRoute();
 // const route = useRoute();
 // console.log(route);
 // let Component: Vnode = ref();
