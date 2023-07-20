@@ -63,16 +63,19 @@ const storeLyric = function (lyric: LyricItem[]) {
 
 const getVideoSrc = computed(() => {
   return videoInfo?.fileName === ""
-    ? `http://127.0.0.1:5000/video_show?vkey=${orderId.value}`
-    : `http://127.0.0.1:5000/video_show?vname=${videoInfo?.fileName}`;
+    ? `http://101.37.80.29/api/video_show?vkey=${orderId.value}`
+    : `http://101.37.80.29/api/video_show?vname=${videoInfo?.fileName}`;
 });
 
 onMounted(() => {
   startPolling();
-  watch(useRoute().params, (toParams, previousParams) => {
-    console.log("toParams, previousParams: ", toParams, previousParams);
-    // 对路由变化做出响应...
-  });
+  // watch(
+  //   () => useRoute().params,
+  //   (toParams, previousParams) => {
+  //     console.log("toParams, previousParams: ", toParams, previousParams);
+  //     // 对路由变化做出响应...
+  //   }
+  // );
 });
 </script>
 

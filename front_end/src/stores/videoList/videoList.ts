@@ -11,7 +11,7 @@ export default defineStore("videoList", {
           lyric: [],
           playingIndex: 0,
           status: "waiting",
-          orderId: "DKHJQ20230714102427553LWq8DLmgBamJ8csl",
+          orderId: "DKHJQ20230719103034351LDHQsop7XQwS4wFo",
           size: 0,
           index: "2-1",
           startIndex: -1,
@@ -38,7 +38,7 @@ export default defineStore("videoList", {
     },
     updateLyric(orderId: string, text: LyricItem[]) {
       const indexNow = this.videos.findIndex((item) => {
-        console.log("item.orderId === orderId: ", item.orderId, orderId);
+        // console.log("item.orderId === orderId: ", item.orderId, orderId);
         return item.orderId === orderId;
       });
       console.log(indexNow);
