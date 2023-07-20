@@ -19,6 +19,10 @@ class ConverterApi(object):
         self.signa = self.get_signa()
 
     def get_signa(self):
+        """
+        根据用户appid及key构造唯一签名
+        :return: 签名
+        """
         appid = self.appid
         secret_key = self.secret_key
         m2 = hashlib.md5()
@@ -46,13 +50,18 @@ class ConverterApi(object):
         param_dict["callbackUrl"] = "http://101.37.80.29:5000/callback"
         print("upload参数：", param_dict)
         data = open(upload_file_path, 'rb').read(file_len)
-
+        # 构造http请求进行post上传，数据以字典（Json）上传
         response = requests.post(url=lfasr_host + lfasr_upload + "?" + urllib.parse.urlencode(param_dict),
                                  headers={"Content-type": "application/json"}, data=data)
         result = json.loads(response.text)
         return result
 
     def query_result(self, orderId):
+        """
+        根据orderId构造获取结果请求
+        :param orderId: order码
+        :return: 返回结果
+        """
         params = {}
         params["appId"] = self.appid
         params["signa"] = self.signa
