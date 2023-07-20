@@ -1,5 +1,6 @@
 .vite-ssg-temp
 
+.vscode
 node_modules
 .DS_Store
 dist
