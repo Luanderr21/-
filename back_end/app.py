@@ -64,13 +64,16 @@ def xf_uploader():
     """
     video = request.files["video"]
     format = video.filename.split(".")[-1]
+    # 使用uuid生成视频唯一文件名
     vname = str(uuid.uuid4()) + "." + format
     videoPath = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
     video.save(videoPath)
     db = DataBase()
     upload_res = converter.upload(videoPath)
+    # 上传出错
     if "descInfo" not in upload_res:
         return upload_res
+    # 上传结果处理
     if upload_res["descInfo"] == "success":
         orderId = upload_res["content"]["orderId"]
         db.newVideo(orderId, vname)
@@ -98,13 +101,16 @@ def query():
     res_json = json.loads(res)
     if res_json["descInfo"] == "success":
         if res_json["content"]["orderInfo"]["status"] == 4:
+            # 转换成功，获取识别结果
             db.addResult(orderId, res)
             db.close()
             return get_words(res_json)
         elif res_json["content"]["orderInfo"]["status"] == 3:
+            # 结果转换中
             db.close()
             return "converting..."
         elif res_json["content"]["orderInfo"]["status"] == 0:
+            # 数据上传中
             db.close()
             return "uploading..."
         else:
@@ -197,10 +203,10 @@ def replace():
     final_audio.export(export_path, format="wav")
     final_audio_mv = AudioFileClip(export_path)
     final_name = str(uuid.uuid4()) + "." + "mp4"
-    # moviepy合成到原视频并导出
-    video_tmp = VideoFileClip(video_path)
-    video_tmp = video_tmp.set_audio(final_audio_mv)
-    video_tmp.write_videofile(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{final_name}")))
+    # ffmpeg使用控制台命令合成到原视频并导出
+    command = f"ffmpeg -i {video_path} -i {export_path} \-map 0:0 \-map 1:0 \-c:v copy \-c:a libmp3lame -q:a 1 \-shortest \\{final_name}"
+    os.system(command)
+    os.system(f"mv ./{final_name} ./uploads/")
     db.addRepname(orderId, final_name)
     db.close()
     return final_name
@@ -224,6 +230,7 @@ def replace_result():
     assert vname != None
     # return flask.send_file(os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}")))
     path = os.path.normpath(os.path.join(os.path.abspath(__file__), f"../uploads/{vname}"))
+    # 构建视频播放组件返回头
     headers = {
         "Accept-Range": "bytes",
         "Content-Length": os.path.getsize(path),
@@ -245,10 +252,12 @@ def callbackFunc():
     orderId = args["orderId"]
     db = DataBase()
     if args["status"] == "1":
+        # 识别成功
         print("get an order done!")
         res = converter.query_result(orderId)
         db.addResult(orderId, res)
     else:
+        # 识别失败
         db.addResult(orderId, "fail")
     db.close()
     return ""
