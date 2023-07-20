@@ -97,16 +97,13 @@ const isHighlighted = (index: number) => {
 };
 
 const saveText = () => {
-  let text = "";
-  for (let item of videoInfo.lyric) {
-    text += item.line;
-  }
-  const blob = new Blob([text], { type: "text/plain" });
+  let text = JSON.stringify(videoInfo.lyric);
+  const blob = new Blob([text], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = videoInfo.name + ".txt";
+  link.download = videoInfo.name + ".json";
   link.click();
 
   // 释放URL对象
