@@ -2,7 +2,7 @@
   <div class="container">
     <div class="container-header">
       <span class="title">文本</span>
-      <span class="export">导出</span>
+      <span class="export" @click="saveText">导出</span>
     </div>
     <div class="content" v-if="videoInfo?.lyric.length">
       <template v-for="(item, index) of videoInfo.lyric">
@@ -96,6 +96,23 @@ const isHighlighted = (index: number) => {
   );
 };
 
+const saveText = () => {
+  let text = "";
+  for (let item of videoInfo.lyric) {
+    text += item.line;
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = videoInfo.name + ".txt";
+  link.click();
+
+  // 释放URL对象
+  URL.revokeObjectURL(url);
+};
+
 const getTooltip = (bg: string, ed: string) => {
   return durationFormat(bg) + "--" + durationFormat(ed);
 };
@@ -133,6 +150,7 @@ const getTooltip = (bg: string, ed: string) => {
     }
   }
   .content {
+    text-indent: 2.5rem;
     .sentence {
       display: inline;
       line-height: 1.7;

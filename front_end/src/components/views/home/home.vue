@@ -91,7 +91,6 @@ const handleError = function () {
 
 <style scoped lang="scss">
 .home {
-  margin-top: 10rem;
-  padding: 0 15rem 0 15rem;
+  padding: 10rem 15rem 0 15rem;
 }
 </style>
