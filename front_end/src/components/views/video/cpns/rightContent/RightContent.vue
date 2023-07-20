@@ -4,23 +4,28 @@
       <span class="title">文本</span>
       <span class="export">导出</span>
     </div>
-    <div class="content">
-      <template
-        v-for="(item, index) of videoInfo.lyric"
-        v-if="videoInfo?.lyric"
-      >
-        <div
-          contenteditable="true"
-          class="sentence"
-          :class="{
-            'sentence-select': isHighlighted(index + 1),
-          }"
-          @click="handleContentClick(index + 1)"
+    <div class="content" v-if="videoInfo?.lyric.length">
+      <template v-for="(item, index) of videoInfo.lyric">
+        <el-tooltip
+          :content="getTooltip(item.bg, item.ed)"
+          :hide-after="50"
+          placement="left"
+          effect="customized"
         >
-          {{ item.line }}
-        </div>
+          <div
+            contenteditable="true"
+            class="sentence"
+            :class="{
+              'sentence-select': isHighlighted(index + 1),
+            }"
+            @click="handleContentClick(index + 1)"
+          >
+            {{ item.line }}
+          </div>
+        </el-tooltip>
       </template>
     </div>
+    <el-skeleton :rows="16" animated v-else />
   </div>
 </template>
 
@@ -29,6 +34,7 @@ import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import useVideoList from "~/stores/videoList/videoList";
 import { ref } from "vue";
+import { durationFormat } from "~/utils/datatime";
 
 // 异步数据不适合传给props 直接从videoList中调用
 const orderId = useRoute().fullPath.slice(7); //根据路由获取orderId
@@ -89,6 +95,10 @@ const isHighlighted = (index: number) => {
     index === endIndex.value
   );
 };
+
+const getTooltip = (bg: string, ed: string) => {
+  return durationFormat(bg) + "--" + durationFormat(ed);
+};
 </script>
 
 <style scoped lang="scss">
@@ -105,6 +115,7 @@ const isHighlighted = (index: number) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 0 0 16px 0;
     .title {
       color: #0000008c;
       font-size: medium;
@@ -122,7 +133,6 @@ const isHighlighted = (index: number) => {
     }
   }
   .content {
-    margin: 16px 0;
     .sentence {
       display: inline;
       line-height: 1.7;

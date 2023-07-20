@@ -4,6 +4,7 @@
 :root {
   // --ep-color-primary: red;
   --ep-mask-color: rgba(122, 122, 122, 0.7);
+  --ep-border-color: #c08a00;
 }
 
 body {
@@ -25,4 +26,17 @@ code {
   padding: 2px 4px;
   background-color: var(--ep-color-primary-light-9);
   color: var(--ep-color-primary);
+}
+
+// 更改 提示的 背景颜色
+.ep-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: rgb(255, 112, 13);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 112, 13, 1) 85%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  color: var(--ep-color-warning-light-5);
 }

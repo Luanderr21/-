@@ -56,6 +56,7 @@ const handleError = function () {
     <el-upload
       class="upload-demo"
       drag
+      multiple
       action="api/upload"
       name="video"
       :before-upload="handleBeforeUpload"

@@ -3,22 +3,20 @@ import { onMounted, ref } from "vue";
 import useVideoList from "~/stores/videoList/videoList";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
-import { watch } from "vue";
 
-const isLoading = ref(false);
 const orderId = useRoute().fullPath.slice(7); //根据路由获取orderId
 const videoListStore = useVideoList();
 const { videos } = storeToRefs(videoListStore);
 const videoIndex = videoListStore.findVideoIndex(orderId);
 
-watch(videos.value[videoIndex].lyric, (newValue, oldValue) => {
-  console.log(newValue, oldValue);
-  if (newValue.length === 0) {
-    isLoading.value = true;
-  } else {
-    isLoading.value = false;
-  }
-});
+// watch(videos.value[videoIndex].lyric, (newValue, oldValue) => {
+//   console.log(newValue, oldValue);
+//   if (newValue.length === 0) {
+//     isLoading.value = true;
+//   } else {
+//     isLoading.value = false;
+//   }
+// });
 
 onMounted(() => {
   dragControllerDiv();
@@ -93,8 +91,12 @@ function dragControllerDiv() {
     <div class="left" id="left">
       <slot name="left-content"></slot>
     </div>
-    <div class="resize" title="收缩侧边栏">⋮</div>
-    <div class="right" v-loading="isLoading">
+    <div
+      class="resize"
+      title="收缩侧边栏"
+      style="background-color: white"
+    ></div>
+    <div class="right">
       <slot name="right-content"></slot>
     </div>
   </div>
@@ -116,7 +118,10 @@ function dragControllerDiv() {
     background-color: rgb(206, 214, 224);
     display: flex;
     flex-flow: column nowrap;
-    overflow-y: hidden;
+    overflow-y: scroll;
+  }
+  .left::-webkit-scrollbar {
+    display: none;
   }
   .right {
     width: 40%;
@@ -127,16 +132,11 @@ function dragControllerDiv() {
   /*拖拽区div样式*/
   .resize {
     cursor: col-resize;
-    background-color: #818181;
-    position: relative;
-    top: 45%;
-    border-radius: 5px;
-    width: 10px;
-    height: 50px;
+    width: 3px;
+    height: 100%;
     background-size: cover;
     background-position: center;
-    font-size: 32px;
-    color: white;
+    background-color: #fff;
   }
   /*拖拽区鼠标悬停样式*/
   .resize:hover {

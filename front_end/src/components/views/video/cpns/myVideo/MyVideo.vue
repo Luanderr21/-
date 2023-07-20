@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from "vue";
+import { storeToRefs } from "pinia";
+import { onMounted, ref, nextTick, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+
+import useVideoListStore from "~/stores/videoList/videoList";
+
 // import videojs from "video.js";
 // import videojs, { VideoJsPlayerOptions, VideoJsPlayer } from "video.js";
 // import "video.js/dist/video-js.min.css";
-import useVideoList from "~/stores/videoList/videoList";
-import { storeToRefs } from "pinia";
-import { useRoute } from "vue-router";
 
 type MyVideoProps = {
   /** 视频地址 */
@@ -15,7 +17,7 @@ type MyVideoProps = {
 };
 const props = withDefaults(defineProps<MyVideoProps>(), {});
 // video标签
-const videoRef = ref<HTMLElement | null>(null);
+const videoRef = ref<HTMLVideoElement | null>(null);
 // video实例对象
 // let videoPlayer: VideoJsPlayer | null = null;
 
@@ -52,42 +54,48 @@ const videoRef = ref<HTMLElement | null>(null);
 // });
 
 // 处理字幕逻辑
-let currentTime = 0;
-const orderId = useRoute().fullPath.slice(7); //根据路由获取orderId
-const currentSubtitle = ref("");
-const videoListStore = useVideoList();
-const { videos } = storeToRefs(videoListStore);
-const videoIndex = videoListStore.findVideoIndex(orderId);
+let currentTime = ref(0);
 // 处理时间
 const handleTimeUpdate = () => {
-  // console.log(currentTime);
-  // console.log("first");
+  // 更新当前时间
+  currentTime.value = videoRef.value?.currentTime ?? 0;
 };
+
+// 处理加载逻辑
+const videoListStore = useVideoListStore();
+const { videos } = storeToRefs(videoListStore);
+const orderId = useRoute().fullPath.slice(7);
+const videoIndex = videoListStore.findVideoIndex(orderId);
+
+const isVideoLoading = computed(() => {
+  return videos.value[videoIndex].status == "waiting";
+});
 </script>
 <template>
-  <div class="video-container">
+  <div class="video-container" v-loading="isVideoLoading">
     <video
       id="my-player"
       ref="videoRef"
       class="video-js w-full h-full"
-      @timeupdate="handleTimeUpdate()"
+      @timeupdate="handleTimeUpdate"
       :src="src"
       controls
     ></video>
   </div>
+  <subTitle :current-time="currentTime"></subTitle>
 </template>
 <style lang="scss" scoped>
-.w-full {
+.video-container {
+  position: relative;
   width: 100%;
+  height: 0;
+  padding-bottom: calc(9 / 16 * 100%); // 根据视频比例设置高度
 }
-.h-full {
+.video-js {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
 }
-// #my-player {
-//   background-color: #fff;
-//   padding-bottom: 56.25%;
-//   width: 100%;
-//   height: 0;
-//   position: relative;
-// }
 </style>
